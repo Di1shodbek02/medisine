@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from rest_framework.generics import CreateAPIView
 
-# Create your views here.
+from .models import HealthQuestionnaire
+from .serializers import HealthQuestionnaireSerializer
+
+
+class HealthQuestionnaireAPIView(CreateAPIView):
+    queryset = HealthQuestionnaire.objects.all()
+    serializer_class = HealthQuestionnaireSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user_id=self.request.user)
