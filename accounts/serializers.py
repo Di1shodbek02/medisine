@@ -1,8 +1,9 @@
+from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from .models import User
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class RegisterSerializer(ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -22,13 +23,19 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserInfoSerializer(serializers.ModelSerializer):
+class UserInfoSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'middle_name', 'phone_number', 'birth_date')
 
 
-# class UpdateUserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('username', 'first_name', 'last_name', 'middle_name', 'phone_number', 'birth_date')
+class UpdateUserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'middle_name', 'phone_number', 'birth_date')
+
+
+class UserListSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'middle_name', 'phone_number', 'birth_date']

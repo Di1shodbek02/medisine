@@ -1,11 +1,13 @@
 from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, GenericAPIView, \
+    UpdateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
-from .serializers import RegisterSerializer, UserInfoSerializer
+from .permission import IsAdminPermission
+from .serializers import RegisterSerializer, UserInfoSerializer, UpdateUserSerializer, UserListSerializer
 
 
 class RegisterAPIView(CreateAPIView):
@@ -19,17 +21,19 @@ class RegisterAPIView(CreateAPIView):
         return Response({'success': True})
 
 
-# class UpdateUserAPIView(GenericAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     serializer_class = UpdateUserSerializer
-#
-#     def post(self, request):
-#         user_id = request.user.id
-#         user = User.objects.get(id=user_id)
-#         serializer = self.get_serializer(user, data=request.data, partial=True)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response({'success': True})
+class UpdateUserApiView(UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UpdateUserSerializer
+
+    def gat_object(self):
+        return self.request.user
+
+
+class CRUDUserAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UpdateUserSerializer
 
 
 class UserInfo(APIView):
@@ -49,3 +53,9 @@ class LogoutAPIView(APIView):
         token = RefreshToken(refresh_token)
         token.blacklist()
         return Response(status=204)
+
+
+class UserListAPIView(ListAPIView):
+    permission_classes = (IsAdminPermission,)
+    queryset = User.objects.all().order_by('id')
+    serializer_class = UserListSerializer
